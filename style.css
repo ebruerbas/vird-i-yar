@@ -1,0 +1,209 @@
+/* Genel Stil Tanımlamaları */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #0d131a; /* Derin gece mavisi/antrasit */
+    color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Telefon Ekranı Simülasyonu (Maksimum Genişlik) */
+.app-container {
+    width: 100%;
+    max-width: 420px;
+    height: 85vh;
+    min-height: 600px;
+    background: linear-gradient(145deg, #121b24, #0a1015);
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #1e2d3d;
+}
+
+/* Ekran Geçiş Kontrolleri */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 25px;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Ana Başlık Tasarımı */
+.app-header {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.app-header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.2rem;
+    color: #dfb76c; /* Zarif altın sarısı tonu */
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #8a99ad;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Menü Kartları */
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.menu-card {
+    background: #182430;
+    border: 1px solid #233547;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu-card:active {
+    transform: scale(0.98);
+    background: #1c2a38;
+}
+
+.menu-card .icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.menu-card h3 {
+    color: #dfb76c;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.menu-card p {
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+/* Geri Butonu */
+.btn-back {
+    background: none;
+    border: none;
+    color: #8a99ad;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    align-self: flex-start;
+}
+
+/* SAYAÇ EKRANI STİLLERİ */
+.zikir-info {
+    text-align: center;
+    margin-top: 10px;
+}
+
+#zikir-title {
+    color: #dfb76c;
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.meaning {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.4;
+    max-height: 60px;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.target-badge {
+    display: inline-block;
+    background: #233547;
+    color: #dfb76c;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* Büyük Sayaç Göstergesi */
+.counter-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#counter-display {
+    font-size: 5rem;
+    font-weight: 300;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Dev Tıklama Alanı */
+#tap-zone {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #1c2e3d, #13202c);
+    border: 2px solid #dfb76c33;
+    border-radius: 20px;
+    color: #dfb76c;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    margin-bottom: 15px;
+    transition: background 0.1s ease;
+}
+
+#tap-zone:active {
+    background: linear-gradient(135deg, #23394c, #182938);
+    border-color: #dfb76c;
+}
+
+/* Kontroller */
+.counter-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.btn-control {
+    background: #182430;
+    border: 1px solid #233547;
+    color: #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
