@@ -200,7 +200,8 @@ button{cursor:pointer}
 }
 .counter{
   text-align:center;background:var(--card);border:1px solid var(--line);
-  border-radius:24px;padding:20px;margin-top:16px
+  border-radius:24px;padding:20px;margin-top:16px;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
 }
 .count-number{font-size:54px;font-weight:800;margin:8px 0;font-variant-numeric:tabular-nums}
 .count-btn{
@@ -222,7 +223,11 @@ button{cursor:pointer}
 .reading-block{
   background:var(--card);border:1px solid var(--line);border-radius:16px;
   padding:14px 16px;margin:4px 0 12px;text-align:left;
-  font-size:15px;line-height:1.75;color:var(--ink);max-height:40vh;overflow:auto
+  font-size:15px;line-height:1.75;color:var(--ink);max-height:40vh;overflow:auto;
+  user-select:text;-webkit-user-select:text;-webkit-touch-callout:default;
+}
+.counter .arabic-big{
+  user-select:text;-webkit-user-select:text;-webkit-touch-callout:default;
 }
 .empty{
   color:var(--muted);text-align:center;padding:30px 20px;border:1px dashed var(--line);border-radius:20px
@@ -266,7 +271,7 @@ button{cursor:pointer}
         <p id="heroDesc"></p>
         <div class="hero-actions">
           <button class="primary" id="heroOpenBtn">İncele</button>
-          <button class="secondary" id="heroCountBtn">Zikre Başla</button>
+          <button class="secondary" id="heroCountBtn">Virde Başla</button>
         </div>
       </div>
 
@@ -1395,7 +1400,7 @@ function openItem(id){
     ${virtues}
     ${sources}
     ${isEsma ? `<p class="disclaimer">${ESMA_NOTE}</p>` : ''}
-    <button class="primary" style="width:100%;margin-top:16px" onclick="startCounter('${item.id}')">Sayaçla Başla</button>
+    <button class="primary" style="width:100%;margin-top:16px" onclick="startCounter('${item.id}')">Virde Başla</button>
   `;
   $('modal').classList.add('open');
 }
