@@ -31,6 +31,7 @@ body[data-theme="dark"]{
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
+html,body{touch-action:manipulation}
 body{
   margin:0;
   background:
@@ -108,7 +109,10 @@ button{cursor:pointer}
   border-radius:18px;padding:15px 46px 15px 16px;outline:none;
   box-shadow:0 6px 18px rgba(73,56,35,.04);
 }
-.search-wrap span{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search-wrap span,.search-wrap button{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--muted);
+  border:none;background:none;padding:0;font-size:16px;cursor:pointer;line-height:1
+}
 .grid{
   display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px
 }
@@ -148,7 +152,10 @@ button{cursor:pointer}
 }
 .fav.active{color:#a56b55}
 .bottom-nav{
-  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  position:fixed;left:50%;bottom:0;
+  transform:translate3d(-50%,0,0);
+  -webkit-transform:translate3d(-50%,0,0);
+  will-change:transform;
   width:min(100%,520px);background:var(--card);
   backdrop-filter:blur(14px);border-top:1px solid var(--line);
   display:grid;grid-template-columns:repeat(5,1fr);
@@ -169,10 +176,23 @@ button{cursor:pointer}
 }
 .modal.open{display:flex}
 .sheet{
+  position:relative;
   width:min(100%,520px);max-height:88vh;overflow:auto;background:var(--bg);
   border-radius:28px 28px 0 0;padding:24px 20px 32px;
 }
+.sheet-close{
+  position:absolute;top:14px;right:14px;
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);
+  font-size:16px;display:flex;align-items:center;justify-content:center;z-index:5
+}
 .sheet-bar{width:48px;height:5px;background:var(--line);border-radius:999px;margin:0 auto 18px}
+.lang-toggle{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+.lang-btn{
+  border:1px solid var(--line);background:var(--card);color:var(--muted);
+  padding:7px 16px;border-radius:999px;font-size:13px;font-weight:700
+}
+.lang-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .sheet h2{font-family:Georgia,serif;margin:0 0 8px}
 .sheet .arabic-big{font-size:34px;text-align:right;color:var(--accent);line-height:1.9}
 .meta{
@@ -246,8 +266,8 @@ button{cursor:pointer}
       </div>
 
       <div class="search-wrap">
-        <input id="globalSearch" placeholder="Esma, ayet, dua veya konu ara..." />
-        <span>⌕</span>
+        <input id="globalSearch" type="search" enterkeyhint="search" placeholder="Esma, ayet, dua veya konu ara... (Enter'a bas)" />
+        <button type="button" id="searchIconBtn" aria-label="Ara">⌕</button>
       </div>
 
       <div class="grid">
@@ -298,6 +318,7 @@ button{cursor:pointer}
 
 <div id="modal" class="modal" onclick="closeModal(event)">
   <div class="sheet">
+    <button type="button" class="sheet-close" aria-label="Kapat" onclick="event.stopPropagation(); $('modal').classList.remove('open');">✕</button>
     <div class="sheet-bar"></div>
     <div id="sheetContent"></div>
   </div>
@@ -1237,6 +1258,7 @@ let favorites = JSON.parse(localStorage.getItem('virdiyarFavorites') || '[]');
 let currentId = null;
 let count = 0;
 let stageIndex = 0;
+let counterLang = 'tr'; // sayaç ekranında varsayılan dil: Türkçe okunuş
 
 // --- YARDIMCILAR ---
 const $ = id => document.getElementById(id);
@@ -1378,9 +1400,16 @@ function startCounter(id){
   const item = data.find(x=>x.id===id);
   if(!item) return;
   currentId = id;
+  counterLang = 'tr'; // her yeni zikre Türkçe okunuşla başla
   loadCounter(id);
   renderCounter(item);
   $('modal').classList.add('open');
+}
+
+function setCounterLang(lang){
+  counterLang = lang;
+  const item = data.find(x=>x.id===currentId);
+  if(item) renderCounter(item);
 }
 
 function renderCounter(item){
@@ -1391,14 +1420,24 @@ function renderCounter(item){
       const cls = i < stageIndex ? 'done' : (i === stageIndex ? 'current' : '');
       return `<span class="stage-dot ${cls}" title="${s.label}"></span>`;
     }).join('');
+    const langToggle = `
+      <div class="lang-toggle">
+        <button class="lang-btn ${counterLang==='tr'?'active':''}" onclick="setCounterLang('tr')">Türkçe</button>
+        <button class="lang-btn ${counterLang==='ar'?'active':''}" onclick="setCounterLang('ar')">Arapça</button>
+      </div>`;
     $('sheetContent').innerHTML = `
       <h2>${item.title}</h2>
       <div class="counter">
         <div class="stage-info">${dots}</div>
         ${done
           ? `<p class="stage-label">Tesbihat tamamlandı 🌙</p>`
-          : `<div class="arabic-big" lang="ar" style="text-align:center;font-size:26px">${stage.arabic}</div>
-             <p class="stage-label">${stage.label} — Hedef: ${stage.target}</p>`
+          : `${langToggle}
+             ${counterLang==='ar'
+               ? `<div class="arabic-big" lang="ar" style="text-align:center;font-size:26px">${stage.arabic}</div>
+                  <p class="stage-label">${stage.label} — Hedef: ${stage.target}</p>`
+               : `<p class="stage-label" style="font-size:20px">${stage.label}</p>
+                  <p class="stage-label" style="font-weight:400;color:var(--muted)">Hedef: ${stage.target}</p>`
+             }`
         }
         <div class="count-number" id="countNumber">${done ? '✓' : count}</div>
         ${done
@@ -1414,12 +1453,21 @@ function renderCounter(item){
   } else {
     const target = item.ebced || item.target || 33;
     const tur = Math.floor(count / target);
+    const trText = item.reading || item.title; // esmada 'reading' yok, başlık zaten Türkçe okunuş
+    const hasArabic = !!item.arabic;
     $('sheetContent').innerHTML = `
       <h2>${item.title}</h2>
       <p style="color:var(--muted)">Hedef: ${target}</p>
       <div class="counter">
-        ${item.arabic ? `<div class="arabic-big" lang="ar" style="text-align:center;font-size:22px;line-height:1.9">${item.arabic}</div>` : ''}
-        ${item.reading ? `<p class="reading" style="text-align:center">${item.reading}</p>` : ''}
+        ${hasArabic ? `
+        <div class="lang-toggle">
+          <button class="lang-btn ${counterLang==='tr'?'active':''}" onclick="setCounterLang('tr')">Türkçe</button>
+          <button class="lang-btn ${counterLang==='ar'?'active':''}" onclick="setCounterLang('ar')">Arapça</button>
+        </div>` : ''}
+        ${hasArabic && counterLang==='ar'
+          ? `<div class="arabic-big" lang="ar" style="text-align:center;font-size:22px;line-height:1.9">${item.arabic}</div>`
+          : `<p class="reading" style="text-align:center">${trText}</p>`
+        }
         <div class="count-number" id="countNumber">${target === 1 ? count : count % target}</div>
         <button class="count-btn" onclick="incrementCounter()">Zikret</button>
         <div class="tur-badge" id="turBadge">${tur > 0 ? `Tamamlanan tur: ${tur} • Toplam: ${count}` : ''}</div>
@@ -1505,8 +1553,8 @@ function normalizeSearch(str){
     .replace(/[îÎ]/g,'i')
     .replace(/[ûÛ]/g,'u');
 }
-$('globalSearch').addEventListener('input',e=>{
-  const q = normalizeSearch(e.target.value.trim());
+function runSearch(){
+  const q = normalizeSearch($('globalSearch').value.trim());
   if(!q){
     render();
     switchView('home');
@@ -1516,7 +1564,22 @@ $('globalSearch').addEventListener('input',e=>{
   $('searchCount').textContent = `${matches.length} sonuç`;
   $('searchList').innerHTML = matches.length ? matches.map(card).join('') : '<div class="empty">Sonuç bulunamadı.</div>';
   switchView('search');
+}
+// Arama her tuş vuruşunda değil; Enter'a basılınca veya büyüteç ikonuna
+// dokunulunca çalışır. Kutuyu boşaltmak anında ana sayfaya döner.
+$('globalSearch').addEventListener('input',e=>{
+  if(!e.target.value.trim()){
+    render();
+    switchView('home');
+  }
 });
+$('globalSearch').addEventListener('keydown',e=>{
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    runSearch();
+  }
+});
+$('searchIconBtn').addEventListener('click', runSearch);
 
 // --- TEMA ---
 function applyTheme(theme){
