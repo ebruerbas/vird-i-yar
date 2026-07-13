@@ -123,6 +123,20 @@ button{cursor:pointer}
 }
 .quick-card strong{display:block;margin-top:10px;font-size:16px}
 .quick-card small{color:var(--muted)}
+.icon-chip{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:46px;height:46px;border-radius:15px;font-size:22px;line-height:1;
+  background:linear-gradient(160deg, var(--card) 0%, var(--accent-soft) 100%);
+  border:1px solid var(--line);
+  box-shadow:0 6px 12px rgba(73,56,35,.14), inset 0 2px 3px rgba(255,255,255,.8), inset 0 -3px 5px rgba(73,56,35,.14);
+}
+body[data-theme="dark"] .icon-chip{
+  box-shadow:0 6px 12px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.12), inset 0 -3px 5px rgba(0,0,0,.45);
+}
+.quick-card:active .icon-chip{
+  box-shadow:0 2px 5px rgba(73,56,35,.12), inset 0 3px 6px rgba(73,56,35,.18);
+  transform:translateY(1px);
+}
 .section-head{
   display:flex;justify-content:space-between;align-items:center;margin:22px 2px 12px
 }
@@ -167,7 +181,16 @@ button{cursor:pointer}
   font-size:11px
 }
 .nav-btn span{display:block;font-size:20px;margin-bottom:3px}
+.nav-btn .icon-chip{
+  display:flex;width:34px;height:34px;border-radius:12px;font-size:18px;
+  margin:0 auto 3px;
+}
 .nav-btn.active{color:var(--ink);font-weight:800}
+.nav-btn.active .icon-chip{
+  background:linear-gradient(160deg, var(--accent) 0%, #8a6a3e 100%);
+  color:#fff;border-color:transparent;
+  box-shadow:0 6px 12px rgba(73,56,35,.28), inset 0 2px 3px rgba(255,255,255,.35), inset 0 -3px 5px rgba(0,0,0,.22);
+}
 .view{display:none}
 .view.active{display:block}
 .modal{
@@ -240,6 +263,19 @@ button{cursor:pointer}
 }
 .namaz-row:last-child{border-bottom:none}
 .namaz-row strong{font-variant-numeric:tabular-nums;font-size:17px}
+.namaz-row.next span,.namaz-row.next strong{color:var(--accent)}
+.namaz-row.next span::before{content:'● ';font-size:9px;vertical-align:2px}
+.next-vakit{
+  text-align:center;border:1px solid var(--line);
+  background:linear-gradient(150deg, var(--card), var(--accent-soft));
+  border-radius:20px;padding:16px 16px 14px;margin:12px 0;box-shadow:var(--shadow);
+}
+.next-vakit .eyebrow{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.next-vakit-name{font-size:17px;font-weight:800;margin-top:6px}
+.next-vakit-clock{
+  font-size:42px;font-weight:300;line-height:1.2;
+  font-variant-numeric:tabular-nums;letter-spacing:.04em;
+}
 .qibla-compass{width:200px;height:200px;margin:12px auto 4px}
 .toast{
   position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);
@@ -290,11 +326,11 @@ button{cursor:pointer}
       </div>
 
       <div class="grid">
-        <button class="quick-card" onclick="switchView('esma')"><span>📿</span><strong>Esmaül Hüsna</strong><small>99 güzel isim</small></button>
-        <button class="quick-card" onclick="switchView('ayet')"><span>📖</span><strong>Ayetler</strong><small>Konulara göre seçmeler</small></button>
-        <button class="quick-card" onclick="switchView('dua')"><span>🤲</span><strong>Dualar</strong><small>Günlük ve Kur'an duaları</small></button>
-        <button class="quick-card" onclick="switchView('favori')"><span>♡</span><strong>Favorilerim</strong><small>Kendi seçtiklerin</small></button>
-        <button class="quick-card" style="grid-column:1 / -1" onclick="openNamaz()"><span>🕌</span><strong>Namaz Vakitleri &amp; Kıble</strong><small>İline göre vakitler ve kıble pusulası</small></button>
+        <button class="quick-card" onclick="switchView('esma')"><span class="icon-chip">📿</span><strong>Esmaül Hüsna</strong><small>99 güzel isim</small></button>
+        <button class="quick-card" onclick="switchView('ayet')"><span class="icon-chip">📖</span><strong>Ayetler</strong><small>Konulara göre seçmeler</small></button>
+        <button class="quick-card" onclick="switchView('dua')"><span class="icon-chip">🤲</span><strong>Dualar</strong><small>Günlük ve Kur'an duaları</small></button>
+        <button class="quick-card" onclick="switchView('favori')"><span class="icon-chip">♡</span><strong>Favorilerim</strong><small>Kendi seçtiklerin</small></button>
+        <button class="quick-card" style="grid-column:1 / -1" onclick="openNamaz()"><span class="icon-chip">🕌</span><strong>Namaz Vakitleri &amp; Kıble</strong><small id="namazCardSub">İline göre vakitler ve kıble pusulası</small></button>
       </div>
 
       <div class="section-head"><h3>Tesbihat &amp; Günlük Zikirler</h3><span id="tesbihCount"></span></div>
@@ -329,6 +365,11 @@ button{cursor:pointer}
     <section id="namaz" class="view">
       <div class="section-head"><h3>Namaz Vakitleri &amp; Kıble</h3><span id="namazUpdated"></span></div>
       <select id="ilSelect" class="il-select"></select>
+      <div class="next-vakit" id="nextVakitBox" style="display:none">
+        <div class="eyebrow">Sıradaki Vakit</div>
+        <div class="next-vakit-name" id="nextVakitName"></div>
+        <div class="next-vakit-clock" id="nextVakitClock">--:--:--</div>
+      </div>
       <div id="namazTimesBox" class="meta namaz-times"></div>
       <div class="counter">
         <div class="eyebrow" style="text-align:center">Kıble Yönü</div>
@@ -352,11 +393,11 @@ button{cursor:pointer}
 </div>
 
 <nav class="bottom-nav">
-  <button class="nav-btn active" data-view="home"><span>⌂</span>Ana Sayfa</button>
-  <button class="nav-btn" data-view="esma"><span>◌</span>Esmalar</button>
-  <button class="nav-btn" data-view="ayet"><span>◫</span>Ayetler</button>
-  <button class="nav-btn" data-view="dua"><span>♧</span>Dualar</button>
-  <button class="nav-btn" data-view="favori"><span>♡</span>Favoriler</button>
+  <button class="nav-btn active" data-view="home"><span class="icon-chip">⌂</span>Ana Sayfa</button>
+  <button class="nav-btn" data-view="esma"><span class="icon-chip">◌</span>Esmalar</button>
+  <button class="nav-btn" data-view="ayet"><span class="icon-chip">◫</span>Ayetler</button>
+  <button class="nav-btn" data-view="dua"><span class="icon-chip">♧</span>Dualar</button>
+  <button class="nav-btn" data-view="favori"><span class="icon-chip">♡</span>Favoriler</button>
 </nav>
 
 <div id="modal" class="modal" onclick="closeModal(event)">
@@ -1833,7 +1874,7 @@ async function loadNamazVakti(il){
   const cacheKey = `virdiyarNamaz-${il.name}`;
   const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
   if(cached && cached.date === todayKey){
-    renderNamazVakti(cached.timings, cached.fetchedAt, false, false);
+    renderNamazVakti(cached.timings, cached.fetchedAt, false, false, todayKey);
     return;
   }
   $('namazTimesBox').innerHTML = '<div class="empty">Vakitler yükleniyor…</div>';
@@ -1844,10 +1885,10 @@ async function loadNamazVakti(il){
     const timings = json.data.timings;
     const fetchedAt = Date.now();
     localStorage.setItem(cacheKey, JSON.stringify({date: todayKey, timings, fetchedAt}));
-    renderNamazVakti(timings, fetchedAt, true, false);
+    renderNamazVakti(timings, fetchedAt, true, false, todayKey);
   } catch(err){
     if(cached){
-      renderNamazVakti(cached.timings, cached.fetchedAt, false, true);
+      renderNamazVakti(cached.timings, cached.fetchedAt, false, true, cached.date);
     } else {
       $('namazTimesBox').innerHTML = '<div class="empty">İnternet bağlantısı yok ve önceden kaydedilmiş vakit bulunamadı. Bağlantı sağlanınca tekrar deneyin.</div>';
       $('namazUpdated').textContent = '';
@@ -1855,7 +1896,7 @@ async function loadNamazVakti(il){
   }
 }
 
-function renderNamazVakti(t, fetchedAt, fresh, stale){
+function renderNamazVakti(t, fetchedAt, fresh, stale, dateKey){
   const rows = [
     ['İmsak', t.Imsak], ['Güneş', t.Sunrise], ['Öğle', t.Dhuhr],
     ['İkindi', t.Asr], ['Akşam', t.Maghrib], ['Yatsı', t.Isha]
@@ -1865,10 +1906,101 @@ function renderNamazVakti(t, fetchedAt, fresh, stale){
   ).join('');
   const ago = fetchedAt ? timeAgoText(fetchedAt) : '';
   $('namazUpdated').textContent = stale ? `${ago} güncellendi (çevrimdışı)` : `${ago || 'şimdi'} güncellendi`;
+  todayTimings = t;
+  timingsDateKey = dateKey || new Date().toISOString().slice(0,10);
+  lastNextLabel = null; // satır vurgusunu yeniden işaretle
+  tickCountdown();
+}
+
+// --- VAKİT GERİ SAYIMI ---
+const VAKIT_ORDER = [
+  ['İmsak','Imsak',"İmsak'a"],
+  ['Güneş','Sunrise',"Güneş'e"],
+  ['Öğle','Dhuhr',"Öğle'ye"],
+  ['İkindi','Asr',"İkindi'ye"],
+  ['Akşam','Maghrib',"Akşam'a"],
+  ['Yatsı','Isha',"Yatsı'ya"]
+];
+let todayTimings = null;
+let timingsDateKey = null;
+let lastNextLabel = null;
+let namazCardSubDefault = null;
+
+function parseVakit(dateKey, hhmm){
+  const [h, m] = hhmm.slice(0,5).split(':').map(Number);
+  const d = new Date(dateKey + 'T00:00:00');
+  d.setHours(h, m, 0, 0);
+  return d;
+}
+
+function getNextVakit(){
+  if(!todayTimings || !timingsDateKey) return null;
+  const now = new Date();
+  for(const [label, key, dative] of VAKIT_ORDER){
+    if(!todayTimings[key]) continue;
+    const t = parseVakit(timingsDateKey, todayTimings[key]);
+    if(t > now) return {label, dative, time: t, tomorrow: false};
+  }
+  // Bugünün tüm vakitleri geçti → yarınki imsak (bugünkü imsak saatiyle yaklaşık)
+  const t = parseVakit(timingsDateKey, todayTimings.Imsak);
+  t.setDate(t.getDate() + 1);
+  return {label:'İmsak', dative:"İmsak'a", time: t, tomorrow: true};
+}
+
+function fmtCountdown(ms){
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const h = String(Math.floor(s / 3600)).padStart(2,'0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2,'0');
+  const sec = String(s % 60).padStart(2,'0');
+  return `${h}:${m}:${sec}`;
+}
+
+function tickCountdown(){
+  // Gün değiştiyse yeni günün vakitlerini çek
+  const todayKey = new Date().toISOString().slice(0,10);
+  if(timingsDateKey && currentIl && todayKey !== timingsDateKey){
+    timingsDateKey = null;
+    todayTimings = null;
+    loadNamazVakti(currentIl);
+    return;
+  }
+  const next = getNextVakit();
+  const box = $('nextVakitBox');
+  const sub = $('namazCardSub');
+  if(namazCardSubDefault == null && sub) namazCardSubDefault = sub.textContent;
+  if(!next){
+    if(box) box.style.display = 'none';
+    if(sub && namazCardSubDefault) sub.textContent = namazCardSubDefault;
+    return;
+  }
+  const clock = fmtCountdown(next.time - Date.now());
+  if(box){
+    box.style.display = 'block';
+    $('nextVakitName').textContent = `${next.dative}${next.tomorrow ? ' (yarın)' : ''} kalan`;
+    $('nextVakitClock').textContent = clock;
+  }
+  if(sub) sub.textContent = `${next.dative} ${clock}`;
+  if(next.label !== lastNextLabel){
+    lastNextLabel = next.label;
+    document.querySelectorAll('.namaz-row').forEach(r => {
+      const lbl = r.querySelector('span');
+      r.classList.toggle('next', !next.tomorrow && lbl && lbl.textContent === next.label);
+    });
+  }
 }
 
 initHero();
 render();
+
+// Açılışta kayıtlı il varsa vakitleri yükle → ana karttaki geri sayım hemen çalışsın
+(function initCountdownOnStartup(){
+  const savedIl = localStorage.getItem('virdiyarIl');
+  if(savedIl){
+    const il = IL_LIST.find(x => x.name === savedIl);
+    if(il){ currentIl = il; loadNamazVakti(il); }
+  }
+  setInterval(tickCountdown, 1000);
+})();
 </script>
 </body>
 </html>
