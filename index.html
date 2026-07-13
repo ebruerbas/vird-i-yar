@@ -228,6 +228,19 @@ button{cursor:pointer}
 .empty{
   color:var(--muted);text-align:center;padding:30px 20px;border:1px dashed var(--line);border-radius:20px
 }
+.il-select{
+  width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:18px;padding:15px 16px;outline:none;font-weight:700;margin-bottom:12px;
+  box-shadow:0 6px 18px rgba(73,56,35,.04);
+}
+.namaz-times{display:grid;gap:2px}
+.namaz-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 2px;border-bottom:1px solid var(--line);font-size:15px
+}
+.namaz-row:last-child{border-bottom:none}
+.namaz-row strong{font-variant-numeric:tabular-nums;font-size:17px}
+.qibla-compass{width:200px;height:200px;margin:12px auto 4px}
 .toast{
   position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);
   background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:14px;
@@ -281,6 +294,7 @@ button{cursor:pointer}
         <button class="quick-card" onclick="switchView('ayet')"><span>📖</span><strong>Ayetler</strong><small>Konulara göre seçmeler</small></button>
         <button class="quick-card" onclick="switchView('dua')"><span>🤲</span><strong>Dualar</strong><small>Günlük ve Kur'an duaları</small></button>
         <button class="quick-card" onclick="switchView('favori')"><span>♡</span><strong>Favorilerim</strong><small>Kendi seçtiklerin</small></button>
+        <button class="quick-card" style="grid-column:1 / -1" onclick="openNamaz()"><span>🕌</span><strong>Namaz Vakitleri &amp; Kıble</strong><small>İline göre vakitler ve kıble pusulası</small></button>
       </div>
 
       <div class="section-head"><h3>Tesbihat &amp; Günlük Zikirler</h3><span id="tesbihCount"></span></div>
@@ -310,6 +324,29 @@ button{cursor:pointer}
     <section id="search" class="view">
       <div class="section-head"><h3>Arama Sonuçları</h3><span id="searchCount"></span></div>
       <div id="searchList" class="list"></div>
+    </section>
+
+    <section id="namaz" class="view">
+      <div class="section-head"><h3>Namaz Vakitleri &amp; Kıble</h3><span id="namazUpdated"></span></div>
+      <select id="ilSelect" class="il-select"></select>
+      <div id="namazTimesBox" class="meta namaz-times"></div>
+      <div class="counter">
+        <div class="eyebrow" style="text-align:center">Kıble Yönü</div>
+        <div class="qibla-compass">
+          <svg viewBox="0 0 200 200" width="200" height="200">
+            <circle cx="100" cy="100" r="96" fill="none" stroke="var(--line)" stroke-width="3"></circle>
+            <text x="100" y="24" text-anchor="middle" font-size="14" fill="var(--muted)" font-weight="800">K</text>
+            <g id="qiblaArrowGroup" style="transform-origin:100px 100px;transition:transform .15s ease-out;">
+              <line x1="100" y1="100" x2="100" y2="30" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"></line>
+              <polygon points="100,14 88,38 112,38" fill="var(--accent)"></polygon>
+            </g>
+            <circle cx="100" cy="100" r="5" fill="var(--ink)"></circle>
+          </svg>
+        </div>
+        <p id="qiblaAngleText" style="color:var(--muted);font-size:13px;margin:4px 0 12px"></p>
+        <button id="compassPermBtn" class="secondary" onclick="requestCompassPermission()">Pusulayı Etkinleştir</button>
+        <p class="disclaimer">Ezan vakitleri Diyanet hesap yöntemine yakın (deneysel) bir kaynaktan alınır, resmî Diyanet vakitleriyle birkaç dakika farklı olabilir. Pusula, cihazınızın sensörüne bağlıdır; masaüstünde veya sensörsüz cihazlarda çalışmaz, bu durumda yukarıdaki açıyı elle kullanabilirsiniz.</p>
+      </div>
     </section>
   </main>
 </div>
@@ -1259,6 +1296,93 @@ const ESMA_SOURCES = [
 const ESMA_NOTE = 'Ebced değerleri geleneksel hesaba göredir ve kaynaklarda küçük farklılıklar görülebilir; belirli sayıda zikre kesin bir dünyevî sonuç bağlamak dinî bir hüküm değildir.';
 const ESMA_NO_VERSE = 'Bu isim Kur’an’da bu kalıpla geçmez; Tirmizî rivayetindeki esmâ-i hüsnâ listesinde yer alır.';
 
+// ============================================================
+// 81 İL — namaz vakti ve kıble hesabı için il merkezi koordinatları
+// ============================================================
+const IL_LIST = [
+  {name:'Adana', lat:37.0000, lon:35.3213},
+  {name:'Adıyaman', lat:37.7648, lon:38.2786},
+  {name:'Afyonkarahisar', lat:38.7507, lon:30.5567},
+  {name:'Ağrı', lat:39.7191, lon:43.0503},
+  {name:'Aksaray', lat:38.3687, lon:34.0360},
+  {name:'Amasya', lat:40.6499, lon:35.8353},
+  {name:'Ankara', lat:39.9334, lon:32.8597},
+  {name:'Antalya', lat:36.8969, lon:30.7133},
+  {name:'Ardahan', lat:41.1105, lon:42.7022},
+  {name:'Artvin', lat:41.1828, lon:41.8183},
+  {name:'Aydın', lat:37.8560, lon:27.8416},
+  {name:'Balıkesir', lat:39.6484, lon:27.8826},
+  {name:'Bartın', lat:41.6344, lon:32.3375},
+  {name:'Batman', lat:37.8812, lon:41.1351},
+  {name:'Bayburt', lat:40.2552, lon:40.2249},
+  {name:'Bilecik', lat:40.1506, lon:29.9792},
+  {name:'Bingöl', lat:38.8855, lon:40.4989},
+  {name:'Bitlis', lat:38.4006, lon:42.1095},
+  {name:'Bolu', lat:40.7397, lon:31.6110},
+  {name:'Burdur', lat:37.7203, lon:30.2905},
+  {name:'Bursa', lat:40.1826, lon:29.0669},
+  {name:'Çanakkale', lat:40.1553, lon:26.4142},
+  {name:'Çankırı', lat:40.6013, lon:33.6134},
+  {name:'Çorum', lat:40.5506, lon:34.9556},
+  {name:'Denizli', lat:37.7765, lon:29.0864},
+  {name:'Diyarbakır', lat:37.9144, lon:40.2306},
+  {name:'Düzce', lat:40.8438, lon:31.1565},
+  {name:'Edirne', lat:41.6771, lon:26.5557},
+  {name:'Elazığ', lat:38.6810, lon:39.2264},
+  {name:'Erzincan', lat:39.7500, lon:39.5000},
+  {name:'Erzurum', lat:39.9000, lon:41.2700},
+  {name:'Eskişehir', lat:39.7767, lon:30.5206},
+  {name:'Gaziantep', lat:37.0662, lon:37.3833},
+  {name:'Giresun', lat:40.9128, lon:38.3895},
+  {name:'Gümüşhane', lat:40.4386, lon:39.5086},
+  {name:'Hakkari', lat:37.5744, lon:43.7408},
+  {name:'Hatay', lat:36.4018, lon:36.3498},
+  {name:'Iğdır', lat:39.9167, lon:44.0333},
+  {name:'Isparta', lat:37.7648, lon:30.5566},
+  {name:'İstanbul', lat:41.0082, lon:28.9784},
+  {name:'İzmir', lat:38.4237, lon:27.1428},
+  {name:'Kahramanmaraş', lat:37.5753, lon:36.9228},
+  {name:'Karabük', lat:41.2061, lon:32.6204},
+  {name:'Karaman', lat:37.1759, lon:33.2287},
+  {name:'Kars', lat:40.6013, lon:43.0975},
+  {name:'Kastamonu', lat:41.3887, lon:33.7827},
+  {name:'Kayseri', lat:38.7312, lon:35.4787},
+  {name:'Kilis', lat:36.7184, lon:37.1212},
+  {name:'Kırıkkale', lat:39.8468, lon:33.5153},
+  {name:'Kırklareli', lat:41.7333, lon:27.2167},
+  {name:'Kırşehir', lat:39.1425, lon:34.1709},
+  {name:'Kocaeli', lat:40.8533, lon:29.8815},
+  {name:'Konya', lat:37.8746, lon:32.4932},
+  {name:'Kütahya', lat:39.4242, lon:29.9833},
+  {name:'Malatya', lat:38.3552, lon:38.3095},
+  {name:'Manisa', lat:38.6191, lon:27.4289},
+  {name:'Mardin', lat:37.3212, lon:40.7245},
+  {name:'Mersin', lat:36.8000, lon:34.6333},
+  {name:'Muğla', lat:37.2153, lon:28.3636},
+  {name:'Muş', lat:38.9462, lon:41.7539},
+  {name:'Nevşehir', lat:38.6939, lon:34.6857},
+  {name:'Niğde', lat:37.9667, lon:34.6833},
+  {name:'Ordu', lat:40.9839, lon:37.8764},
+  {name:'Osmaniye', lat:37.0742, lon:36.2478},
+  {name:'Rize', lat:41.0201, lon:40.5234},
+  {name:'Sakarya', lat:40.6940, lon:30.4358},
+  {name:'Samsun', lat:41.2867, lon:36.3300},
+  {name:'Siirt', lat:37.9333, lon:41.9500},
+  {name:'Sinop', lat:42.0231, lon:35.1531},
+  {name:'Sivas', lat:39.7477, lon:37.0179},
+  {name:'Şanlıurfa', lat:37.1591, lon:38.7969},
+  {name:'Şırnak', lat:37.4187, lon:42.4918},
+  {name:'Tekirdağ', lat:40.9833, lon:27.5167},
+  {name:'Tokat', lat:40.3167, lon:36.5500},
+  {name:'Trabzon', lat:41.0027, lon:39.7168},
+  {name:'Tunceli', lat:39.1079, lon:39.5401},
+  {name:'Uşak', lat:38.6823, lon:29.4082},
+  {name:'Van', lat:38.4891, lon:43.4089},
+  {name:'Yalova', lat:40.6500, lon:29.2667},
+  {name:'Yozgat', lat:39.8181, lon:34.8147},
+  {name:'Zonguldak', lat:41.4564, lon:31.7987}
+];
+
 // --- DURUM ---
 let favorites = JSON.parse(localStorage.getItem('virdiyarFavorites') || '[]');
 let currentId = null;
@@ -1602,6 +1726,146 @@ $('themeBtn').addEventListener('click',()=>{
   applyTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
 });
 applyTheme(localStorage.getItem('virdiyarTheme') || 'light');
+
+// --- NAMAZ VAKİTLERİ & KIBLE ---
+let namazInitialized = false;
+let currentIl = null;
+let currentQiblaBearing = null;
+let deviceHeading = null;
+
+function openNamaz(){
+  switchView('namaz');
+  if(!namazInitialized){
+    namazInitialized = true;
+    initNamaz();
+  }
+}
+
+function initNamaz(){
+  const select = $('ilSelect');
+  select.innerHTML = IL_LIST.map(il => `<option value="${il.name}">${il.name}</option>`).join('');
+  const savedIl = localStorage.getItem('virdiyarIl') || 'İstanbul';
+  select.value = IL_LIST.some(il => il.name === savedIl) ? savedIl : 'İstanbul';
+  select.addEventListener('change', () => selectIl(select.value));
+  selectIl(select.value);
+}
+
+function selectIl(ilName){
+  const il = IL_LIST.find(x => x.name === ilName);
+  if(!il) return;
+  currentIl = il;
+  localStorage.setItem('virdiyarIl', il.name);
+  currentQiblaBearing = computeQiblaBearing(il.lat, il.lon);
+  $('qiblaAngleText').textContent = `Kıble açısı: ${Math.round(currentQiblaBearing)}° (kuzeyden saat yönünde)`;
+  updateCompassRotation();
+  loadNamazVakti(il);
+}
+
+// Kâbe'ye great-circle ilk açı (bearing) hesabı
+function computeQiblaBearing(lat, lon){
+  const kaabaLat = 21.4225 * Math.PI/180;
+  const kaabaLon = 39.8262 * Math.PI/180;
+  const phi1 = lat * Math.PI/180;
+  const lambda1 = lon * Math.PI/180;
+  const y = Math.sin(kaabaLon - lambda1) * Math.cos(kaabaLat);
+  const x = Math.cos(phi1) * Math.sin(kaabaLat) - Math.sin(phi1) * Math.cos(kaabaLat) * Math.cos(kaabaLon - lambda1);
+  const theta = Math.atan2(y, x);
+  return (theta * 180/Math.PI + 360) % 360;
+}
+
+function updateCompassRotation(){
+  if(currentQiblaBearing == null) return;
+  const heading = deviceHeading == null ? 0 : deviceHeading;
+  const rotation = (currentQiblaBearing - heading + 360) % 360;
+  const group = $('qiblaArrowGroup');
+  if(group) group.style.transform = `rotate(${rotation}deg)`;
+}
+
+function handleDeviceOrientation(e){
+  let heading;
+  if(typeof e.webkitCompassHeading === 'number'){
+    heading = e.webkitCompassHeading;
+  } else if(e.absolute && typeof e.alpha === 'number'){
+    heading = (360 - e.alpha) % 360;
+  } else {
+    return;
+  }
+  deviceHeading = heading;
+  updateCompassRotation();
+}
+
+function requestCompassPermission(){
+  const btn = $('compassPermBtn');
+  if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    DeviceOrientationEvent.requestPermission().then(state => {
+      if(state === 'granted'){
+        window.addEventListener('deviceorientation', handleDeviceOrientation, true);
+        showToast('Pusula etkinleştirildi');
+        if(btn) btn.style.display = 'none';
+      } else {
+        showToast('Pusula izni reddedildi');
+      }
+    }).catch(() => showToast('Pusula desteklenmiyor'));
+  } else if('ondeviceorientationabsolute' in window){
+    window.addEventListener('deviceorientationabsolute', handleDeviceOrientation, true);
+    showToast('Pusula etkinleştirildi');
+    if(btn) btn.style.display = 'none';
+  } else if('ondeviceorientation' in window){
+    window.addEventListener('deviceorientation', handleDeviceOrientation, true);
+    showToast('Pusula etkinleştirildi');
+    if(btn) btn.style.display = 'none';
+  } else {
+    showToast('Cihazınız pusula sensörünü desteklemiyor');
+  }
+}
+
+function timeAgoText(ts){
+  const diffMin = Math.floor((Date.now() - ts) / 60000);
+  if(diffMin < 1) return 'az önce';
+  if(diffMin < 60) return `${diffMin} dk önce`;
+  const diffH = Math.floor(diffMin / 60);
+  if(diffH < 24) return `${diffH} sa önce`;
+  return `${Math.floor(diffH / 24)} gün önce`;
+}
+
+async function loadNamazVakti(il){
+  const todayKey = new Date().toISOString().slice(0,10);
+  const cacheKey = `virdiyarNamaz-${il.name}`;
+  const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+  if(cached && cached.date === todayKey){
+    renderNamazVakti(cached.timings, cached.fetchedAt, false, false);
+    return;
+  }
+  $('namazTimesBox').innerHTML = '<div class="empty">Vakitler yükleniyor…</div>';
+  try{
+    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${il.lat}&longitude=${il.lon}&method=13`);
+    if(!res.ok) throw new Error('network');
+    const json = await res.json();
+    const timings = json.data.timings;
+    const fetchedAt = Date.now();
+    localStorage.setItem(cacheKey, JSON.stringify({date: todayKey, timings, fetchedAt}));
+    renderNamazVakti(timings, fetchedAt, true, false);
+  } catch(err){
+    if(cached){
+      renderNamazVakti(cached.timings, cached.fetchedAt, false, true);
+    } else {
+      $('namazTimesBox').innerHTML = '<div class="empty">İnternet bağlantısı yok ve önceden kaydedilmiş vakit bulunamadı. Bağlantı sağlanınca tekrar deneyin.</div>';
+      $('namazUpdated').textContent = '';
+    }
+  }
+}
+
+function renderNamazVakti(t, fetchedAt, fresh, stale){
+  const rows = [
+    ['İmsak', t.Imsak], ['Güneş', t.Sunrise], ['Öğle', t.Dhuhr],
+    ['İkindi', t.Asr], ['Akşam', t.Maghrib], ['Yatsı', t.Isha]
+  ];
+  $('namazTimesBox').innerHTML = rows.map(([label, time]) =>
+    `<div class="namaz-row"><span>${label}</span><strong>${time}</strong></div>`
+  ).join('');
+  const ago = fetchedAt ? timeAgoText(fetchedAt) : '';
+  $('namazUpdated').textContent = stale ? `${ago} güncellendi (çevrimdışı)` : `${ago || 'şimdi'} güncellendi`;
+}
 
 initHero();
 render();
