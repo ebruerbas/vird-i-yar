@@ -125,17 +125,30 @@ button{cursor:pointer}
 .quick-card small{color:var(--muted)}
 .icon-chip{
   display:inline-flex;align-items:center;justify-content:center;
-  width:46px;height:46px;border-radius:15px;font-size:22px;line-height:1;
-  background:linear-gradient(160deg, var(--card) 0%, var(--accent-soft) 100%);
-  border:1px solid var(--line);
-  box-shadow:0 6px 12px rgba(73,56,35,.14), inset 0 2px 3px rgba(255,255,255,.8), inset 0 -3px 5px rgba(73,56,35,.14);
+  width:52px;height:52px;border-radius:17px;font-size:25px;line-height:1;
+  background:linear-gradient(165deg, #fffdf4 0%, var(--accent-soft) 42%, #d3b98c 100%);
+  border:1px solid rgba(159,127,79,.4);
+  box-shadow:
+    0 10px 18px rgba(73,56,35,.30),
+    0 3px 5px rgba(73,56,35,.22),
+    inset 0 3px 5px rgba(255,255,255,.95),
+    inset 3px 0 5px rgba(255,255,255,.4),
+    inset 0 -5px 8px rgba(112,84,48,.38);
+  text-shadow:0 2px 3px rgba(73,56,35,.25);
 }
 body[data-theme="dark"] .icon-chip{
-  box-shadow:0 6px 12px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.12), inset 0 -3px 5px rgba(0,0,0,.45);
+  background:linear-gradient(165deg, #4d4234 0%, var(--accent-soft) 45%, #241e16 100%);
+  border-color:rgba(200,164,104,.35);
+  box-shadow:
+    0 10px 18px rgba(0,0,0,.55),
+    0 3px 5px rgba(0,0,0,.4),
+    inset 0 3px 5px rgba(255,235,200,.22),
+    inset 3px 0 5px rgba(255,235,200,.08),
+    inset 0 -5px 8px rgba(0,0,0,.6);
 }
 .quick-card:active .icon-chip{
-  box-shadow:0 2px 5px rgba(73,56,35,.12), inset 0 3px 6px rgba(73,56,35,.18);
-  transform:translateY(1px);
+  box-shadow:0 2px 4px rgba(73,56,35,.15), inset 0 4px 8px rgba(73,56,35,.3);
+  transform:translateY(2px);
 }
 .section-head{
   display:flex;justify-content:space-between;align-items:center;margin:22px 2px 12px
@@ -182,14 +195,18 @@ body[data-theme="dark"] .icon-chip{
 }
 .nav-btn span{display:block;font-size:20px;margin-bottom:3px}
 .nav-btn .icon-chip{
-  display:flex;width:34px;height:34px;border-radius:12px;font-size:18px;
-  margin:0 auto 3px;
+  display:flex;width:38px;height:38px;border-radius:13px;font-size:19px;
+  margin:0 auto 4px;
 }
 .nav-btn.active{color:var(--ink);font-weight:800}
 .nav-btn.active .icon-chip{
-  background:linear-gradient(160deg, var(--accent) 0%, #8a6a3e 100%);
-  color:#fff;border-color:transparent;
-  box-shadow:0 6px 12px rgba(73,56,35,.28), inset 0 2px 3px rgba(255,255,255,.35), inset 0 -3px 5px rgba(0,0,0,.22);
+  background:linear-gradient(165deg, #dfc294 0%, var(--accent) 45%, #75552c 100%);
+  color:#fff;border-color:rgba(112,84,48,.5);
+  box-shadow:
+    0 8px 14px rgba(73,56,35,.4),
+    inset 0 3px 4px rgba(255,255,255,.5),
+    inset 0 -4px 7px rgba(0,0,0,.35);
+  text-shadow:0 2px 3px rgba(0,0,0,.35);
 }
 .view{display:none}
 .view.active{display:block}
@@ -276,6 +293,23 @@ body[data-theme="dark"] .icon-chip{
   font-size:42px;font-weight:300;line-height:1.2;
   font-variant-numeric:tabular-nums;letter-spacing:.04em;
 }
+.ezan-setting{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  border:1px solid var(--line);background:var(--card);border-radius:16px;
+  padding:12px 14px;margin:12px 0;
+}
+.ezan-setting strong{font-size:15px}
+.ezan-setting small{color:var(--muted);line-height:1.4;display:block;margin-top:2px}
+.toggle{
+  width:52px;height:30px;border-radius:999px;border:1px solid var(--line);
+  background:var(--accent-soft);position:relative;transition:background .2s;flex:none;padding:0;
+}
+.toggle::after{
+  content:'';position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.25);transition:left .2s;
+}
+.toggle.on{background:var(--accent)}
+.toggle.on::after{left:25px}
 .qibla-compass{width:200px;height:200px;margin:12px auto 4px}
 .toast{
   position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);
@@ -367,10 +401,17 @@ body[data-theme="dark"] .icon-chip{
       <select id="ilSelect" class="il-select"></select>
       <div class="next-vakit" id="nextVakitBox" style="display:none">
         <div class="eyebrow">Sıradaki Vakit</div>
-        <div class="next-vakit-name" id="nextVakitName"></div>
+        <div class="next-vakit-name" id="nextVakitName">Vakitler yükleniyor…</div>
         <div class="next-vakit-clock" id="nextVakitClock">--:--:--</div>
       </div>
       <div id="namazTimesBox" class="meta namaz-times"></div>
+      <div class="ezan-setting">
+        <div>
+          <strong>🔔 Ezan Bildirimi</strong>
+          <small>Vakit girince bildirim gönderir ve ezanın ilk saniyelerini çalar. Uygulama açık bir sekmede kaldığı sürece çalışır.</small>
+        </div>
+        <button type="button" id="ezanToggle" class="toggle" aria-label="Ezan bildirimi" onclick="toggleEzanAlert()"></button>
+      </div>
       <div class="counter">
         <div class="eyebrow" style="text-align:center">Kıble Yönü</div>
         <div class="qibla-compass">
@@ -386,7 +427,7 @@ body[data-theme="dark"] .icon-chip{
         </div>
         <p id="qiblaAngleText" style="color:var(--muted);font-size:13px;margin:4px 0 12px"></p>
         <button id="compassPermBtn" class="secondary" onclick="requestCompassPermission()">Pusulayı Etkinleştir</button>
-        <p class="disclaimer">Ezan vakitleri Diyanet hesap yöntemine yakın (deneysel) bir kaynaktan alınır, resmî Diyanet vakitleriyle birkaç dakika farklı olabilir. Pusula, cihazınızın sensörüne bağlıdır; masaüstünde veya sensörsüz cihazlarda çalışmaz, bu durumda yukarıdaki açıyı elle kullanabilirsiniz.</p>
+        <p class="disclaimer">Ezan vakitleri Diyanet hesap yöntemine yakın (deneysel) bir kaynaktan alınır, resmî Diyanet vakitleriyle birkaç dakika farklı olabilir. Pusula, cihazınızın sensörüne bağlıdır; masaüstünde veya sensörsüz cihazlarda çalışmaz, bu durumda yukarıdaki açıyı elle kullanabilirsiniz. Ezan sesi: Nasır el-Katami (archive.org/details/1azan, CC BY-NC 3.0).</p>
       </div>
     </section>
   </main>
@@ -1776,6 +1817,7 @@ let deviceHeading = null;
 
 function openNamaz(){
   switchView('namaz');
+  $('nextVakitBox').style.display = 'block'; // panel hemen görünsün, veri gelince dolar
   if(!namazInitialized){
     namazInitialized = true;
     initNamaz();
@@ -1987,6 +2029,82 @@ function tickCountdown(){
       r.classList.toggle('next', !next.tomorrow && lbl && lbl.textContent === next.label);
     });
   }
+  // Beklenen vakit girdiyse ezan bildirimi tetikle
+  if(upcomingVakit && (upcomingVakit.label !== next.label || upcomingVakit.time.getTime() !== next.time.getTime())){
+    const elapsed = Date.now() - upcomingVakit.time.getTime();
+    if(elapsed >= 0 && elapsed < 120000 && upcomingVakit.label !== 'Güneş' && ezanAlertEnabled()){
+      const key = timingsDateKey + '-' + upcomingVakit.label;
+      if(localStorage.getItem('virdiyarEzanFired') !== key){
+        localStorage.setItem('virdiyarEzanFired', key);
+        fireEzanAlert(upcomingVakit.label);
+      }
+    }
+  }
+  upcomingVakit = next;
+}
+
+// --- EZAN BİLDİRİMİ ---
+// Ses: Nasır el-Katami ezanı — archive.org/details/1azan (CC BY-NC 3.0)
+const EZAN_URL = 'https://archive.org/download/1azan/mehwar.mp3';
+const EZAN_SNIPPET_MS = 3000;
+let upcomingVakit = null;
+let ezanAudio = null;
+let ezanFadeTimer = null;
+
+function ezanAlertEnabled(){ return localStorage.getItem('virdiyarEzanAlert') === '1'; }
+
+function getEzanAudio(){
+  if(!ezanAudio){
+    ezanAudio = new Audio(EZAN_URL);
+    ezanAudio.preload = 'auto';
+  }
+  return ezanAudio;
+}
+
+function toggleEzanAlert(){
+  const enable = !ezanAlertEnabled();
+  localStorage.setItem('virdiyarEzanAlert', enable ? '1' : '0');
+  $('ezanToggle').classList.toggle('on', enable);
+  if(enable){
+    // Kullanıcı dokunuşuyla ses kilidini aç (mobil autoplay engeli)
+    const a = getEzanAudio();
+    a.muted = true;
+    const p = a.play();
+    if(p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+    if('Notification' in window && Notification.permission === 'default'){
+      Notification.requestPermission();
+    }
+    showToast('Ezan bildirimi açık — sekme açık kaldıkça çalışır');
+  } else {
+    showToast('Ezan bildirimi kapatıldı');
+  }
+}
+
+function playEzanSnippet(){
+  const a = getEzanAudio();
+  try{
+    a.currentTime = 0;
+    a.volume = 1;
+    const p = a.play();
+    if(p) p.catch(() => {});
+    clearTimeout(ezanFadeTimer);
+    ezanFadeTimer = setTimeout(() => {
+      const fade = setInterval(() => {
+        if(a.volume > 0.1){ a.volume = Math.max(0, a.volume - 0.1); }
+        else { clearInterval(fade); a.pause(); a.volume = 1; }
+      }, 60);
+    }, EZAN_SNIPPET_MS);
+  }catch(e){}
+}
+
+function fireEzanAlert(label){
+  const msg = `${label} vakti girdi 🕌`;
+  showToast(msg);
+  if(navigator.vibrate) navigator.vibrate([300, 150, 300]);
+  if('Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification('Vird-i Yâr', {body: msg, tag: 'ezan'}); }catch(e){}
+  }
+  playEzanSnippet();
 }
 
 initHero();
@@ -1999,6 +2117,8 @@ render();
     const il = IL_LIST.find(x => x.name === savedIl);
     if(il){ currentIl = il; loadNamazVakti(il); }
   }
+  const ezanBtn = $('ezanToggle');
+  if(ezanBtn) ezanBtn.classList.toggle('on', ezanAlertEnabled());
   setInterval(tickCountdown, 1000);
 })();
 </script>
