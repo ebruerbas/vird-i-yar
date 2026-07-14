@@ -1,0 +1,19 @@
+{
+  "name": "vird-i-yar",
+  "version": "1.0.0",
+  "description": "Vird-i Yâr — Esmaül Hüsna, ayetler, dualar, namaz vakitleri ve ezan bildirimleri",
+  "private": true,
+  "scripts": {
+    "ios:add": "cap add ios",
+    "ios": "cap sync ios && cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/local-notifications": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0"
+  }
+}

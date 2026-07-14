@@ -1,17 +1,53 @@
-# Vird-i Yâr (Virdiyar)
+# Vird-i Yâr 📿
 
-Kapsamlı zikirmatik web uygulaması — tek dosya (`index.html`), vanilla JS. Krem/kahve tema + koyu mod, esma/ayet/dua/tesbihat içerikleri, aşamalı tesbihat sayacı, favoriler.
+Esmaül Hüsna (99 isim), Kur'an'dan seçme ayetler ve dualar, zikir sayacı, namaz vakitleri, kıble pusulası ve ezan bildirimleri sunan mobil uyumlu uygulama.
 
-## Sonraki Adımlar / Roadmap
+## İçerik
 
-- **Ses/dinleme**: Kur'an ayetleri ve Kur'an kökenli dualar (Rabbenâ Âtinâ, Yûnus Duası, Eyyûb Duası, Rabbiğfir Verham) için **Al Quran Cloud** (islamic.network, alquran.cloud) hafız kaydı kullanılabilir — ücretsiz, ticari ürüne gömmeye açık lisans. Hadis kökenli 4 dua (Seyyidü'l-İstiğfar, Zikir/Şükür duası, Rıza duası, Ümmet duası) için hazır kaynak yok; TTS veya kendi ses kaydı gerekecek. Karar bekliyor, henüz uygulanmadı.
-- **Titreşim**: mevcut titreşim davranışı gözden geçirilecek, sonraya bırakıldı.
-- Kullanıcının seçeceği ek ayetler.
-- "Defterim" — kullanıcının kendi zikrini eklemesi (XSS riski için `textContent` kullan, mevcut `innerHTML` şablonlarına karıştırma).
-- Hadis referanslarının bir hocaya son kontrolü.
-- İstatistik/seri (streak) ekranı.
-- PWA — telefona kurulabilir hâle getirme.
+- **99 Esma** — anlam, ebced değeri, fazilet notları ve ayet referanslarıyla
+- **97 Ayet** — Âyetel Kürsî'den Kur'an'da geçen 77 duaya; Arapça metin, Latin okunuş, meal, fazilet ve kaynaklarla
+- **Dualar ve tesbihat** — günlük dualar, kademeli zikir sayacı
+- **Namaz vakitleri** — 81 il için, sıradaki vakte geri sayım
+- **Kıble pusulası** — cihaz sensörüyle
+- **Ezan bildirimi** — web'de sekme açıkken; iOS/Android uygulamasında arka planda (aşağıya bakın)
 
-## Kaynak politikası
+## Web olarak çalıştırma
 
-Diyanet'e dayanmıyor; Kur'an referansı + Buhârî/Müslim/Tirmizî/Ebû Dâvûd + Gazzâlî (el-Maksadü'l-esnâ) + TDV İslâm Ansiklopedisi + Elmalılı. Zayıf/mevkuf rivayetler ve hadis olmayan gelenek virdleri uygulama içinde açıkça işaretli.
+`www/index.html` tek dosyalık bağımsız bir uygulamadır; herhangi bir tarayıcıda açın veya GitHub Pages ile yayınlayın (Settings → Pages → kaynak olarak bu depo, klasör `/www`... yerine kökten servis için `www` içeriğini köke kopyalayabilirsiniz).
+
+## iOS uygulaması (Capacitor)
+
+Gereksinimler: macOS + Xcode, Node.js, (App Store için) Apple Developer hesabı.
+
+```bash
+npm install
+npx cap add ios
+
+# Ezan bildirim sesini üret (ffmpeg gerekir: brew install ffmpeg)
+bash tools/make-ezan-sound.sh
+# Üretilen resources/ezan_kisa.caf dosyasını Xcode'da App hedefine sürükleyin
+# ("Copy items if needed" işaretli olsun)
+
+npx cap sync ios
+npx cap open ios   # Xcode'da çalıştırın
+```
+
+### Ezan bildirimleri nasıl çalışır?
+
+- Vakitler cihazda **çevrimdışı** hesaplanır: [adhan-js](https://github.com/batoulapps/adhan-js), Türkiye (Diyanet) hesap yöntemi. Resmî Diyanet vakitleriyle birkaç dakika fark olabilir.
+- Uygulama her açıldığında/öne geldiğinde önümüzdeki **12 günün 5 ezan vakti** (İmsak, Öğle, İkindi, Akşam, Yatsı) yerel bildirim olarak zamanlanır — 60 bildirim, iOS'un 64 bekleyen bildirim sınırının altında.
+- Bildirim sesi iOS kuralı gereği en fazla 30 saniyedir; ezanın ilk ~28 saniyesi çalınır (Nasır el-Katami, CC BY-NC 3.0).
+- Push sunucusu **gerekmez**; her şey cihazda çalışır.
+- Kullanıcı uygulamayı 12 günden uzun süre hiç açmazsa bildirimler tükenir; uygulamanın arada bir açılması pencereyi ileri kaydırır.
+
+İlgili kod: `www/js/ezan-native.js` (web'de kendiliğinden devre dışıdır).
+
+## Android notu
+
+Aynı kod Android'de de çalışır (`npx cap add android`). Bildirim sesi için `resources/ezan_kisa.wav` dosyasını `android/app/src/main/res/raw/` altına kopyalayın.
+
+## Kaynaklar ve lisans
+
+- Ayet mealleri: "Kur'ân-ı Kerîm'den Duâlar" derlemesi ve Diyanet meali esas alınmıştır.
+- Ezan sesi: Nasır el-Katami — [archive.org/details/1azan](https://archive.org/details/1azan) (CC BY-NC 3.0).
+- Namaz vakitleri (web): [AlAdhan API](https://aladhan.com/prayer-times-api), Diyanet yöntemi (method=13).
