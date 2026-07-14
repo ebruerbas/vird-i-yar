@@ -1,6 +1,6 @@
 {
   "appId": "com.virdiyar.app",
-  "appName": "Vird-i Yâr",
+  "appName": "Vird Diyarı",
   "webDir": "www",
   "ios": {
     "contentInset": "always"

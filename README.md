@@ -1,4 +1,4 @@
-# Vird-i Yâr 📿
+# Vird Diyarı 📿
 
 Esmaül Hüsna (99 isim), Kur'an'dan seçme ayetler ve dualar, zikir sayacı, namaz vakitleri, kıble pusulası ve ezan bildirimleri sunan mobil uyumlu uygulama.
 
@@ -41,6 +41,14 @@ npx cap open ios   # Xcode'da çalıştırın
 - Kullanıcı uygulamayı 12 günden uzun süre hiç açmazsa bildirimler tükenir; uygulamanın arada bir açılması pencereyi ileri kaydırır.
 
 İlgili kod: `www/js/ezan-native.js` (web'de kendiliğinden devre dışıdır).
+
+### Uygulama ikonu
+
+`resources/AppIcon-1024.png` hazırdır. Xcode'da: sol panelde **App → Assets → AppIcon** seçin ve 1024x1024 kutusuna bu dosyayı sürükleyin.
+
+### Uygulama adı
+
+Görünen adı değiştirmek için Xcode'da **App hedefi → General → Display Name** alanına `Vird Diyarı` yazın (capacitor.config.json yeni projelerde bunu otomatik yapar).
 
 ## Android notu
 

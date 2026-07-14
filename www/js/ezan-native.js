@@ -95,7 +95,7 @@
               if(at <= now) continue;
               notifications.push({
                 id: id++,
-                title: 'Vird-i Yâr',
+                title: 'Vird Diyarı',
                 body: v.label + ' vakti girdi 🕌 (' + il.name + ')',
                 schedule: { at: at, allowWhileIdle: true },
                 sound: cap.getPlatform() === 'ios' ? SOUND_IOS : SOUND_ANDROID,

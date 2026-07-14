@@ -1,7 +1,7 @@
 {
   "name": "vird-i-yar",
   "version": "1.0.0",
-  "description": "Vird-i Yâr — Esmaül Hüsna, ayetler, dualar, namaz vakitleri ve ezan bildirimleri",
+  "description": "Vird Diyarı — Esmaül Hüsna, ayetler, dualar, namaz vakitleri ve ezan bildirimleri",
   "private": true,
   "scripts": {
     "ios:add": "cap add ios",

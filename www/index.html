@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Vird-i Yâr</title>
+<title>Vird Diyarı</title>
 <meta name="theme-color" content="#f7f2e8" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -61,16 +61,33 @@ button{cursor:pointer}
 }
 .brand small{
   display:block;
-  color:var(--muted);
+  color:var(--accent);
   font-size:12px;
-  letter-spacing:.12em;
+  font-weight:800;
+  letter-spacing:.14em;
   text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(255,255,255,.9), 0 -1px 1px rgba(73,56,35,.4);
+}
+body[data-theme="dark"] .brand small{
+  text-shadow:0 1px 1px rgba(0,0,0,.75), 0 -1px 0 rgba(255,235,200,.2);
 }
 .brand h1{
   margin:3px 0 0;
   font-family:Georgia, "Times New Roman", serif;
-  font-size:30px;
-  font-weight:600;
+  font-size:40px;
+  font-weight:700;
+  color:var(--ink);
+  letter-spacing:.01em;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.85),
+    0 2px 2px rgba(73,56,35,.30),
+    0 4px 10px rgba(73,56,35,.18);
+}
+body[data-theme="dark"] .brand h1{
+  text-shadow:
+    0 1px 0 rgba(255,235,200,.22),
+    0 2px 3px rgba(0,0,0,.6),
+    0 5px 12px rgba(0,0,0,.45);
 }
 .icon-btn{
   width:44px;height:44px;border-radius:50%;
@@ -185,13 +202,13 @@ body[data-theme="dark"] .icon-chip{
   will-change:transform;
   width:min(100%,520px);background:var(--card);
   backdrop-filter:blur(14px);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:repeat(5,1fr);
+  display:grid;grid-template-columns:repeat(6,1fr);
   padding:9px 8px calc(9px + env(safe-area-inset-bottom));
   z-index:20;
 }
 .nav-btn{
-  border:none;background:none;color:var(--muted);padding:7px 2px;
-  font-size:11px
+  border:none;background:none;color:var(--muted);padding:7px 1px;
+  font-size:10px
 }
 .nav-btn span{display:block;font-size:20px;margin-bottom:3px}
 .nav-btn .icon-chip{
@@ -337,13 +354,15 @@ body[data-theme="dark"] .icon-chip{
   <header class="topbar">
     <div class="brand">
       <small>Esma • Ayet • Dua</small>
-      <h1>Vird-i Yâr</h1>
+      <h1>Vird Diyarı</h1>
     </div>
     <button class="icon-btn" id="themeBtn" aria-label="Tema">☾</button>
   </header>
 
   <main>
     <section id="home" class="view active">
+      <button class="quick-card" style="width:100%;display:block;margin-bottom:16px" onclick="openNamaz()"><span class="icon-chip">🕌</span><strong>Namaz Vakitleri &amp; Kıble</strong><small id="namazCardSub">İline göre vakitler ve kıble pusulası</small></button>
+
       <div class="hero">
         <div class="eyebrow">Bugünün Esması</div>
         <h2 id="heroTitle"></h2>
@@ -360,15 +379,13 @@ body[data-theme="dark"] .icon-chip{
       </div>
 
       <div class="grid">
-        <button class="quick-card" onclick="switchView('esma')"><span class="icon-chip">📿</span><strong>Esmaül Hüsna</strong><small>99 güzel isim</small></button>
+        <button class="quick-card" onclick="switchView('esma')"><span class="icon-chip">✨</span><strong>Esmaül Hüsna</strong><small>99 güzel isim</small></button>
         <button class="quick-card" onclick="switchView('ayet')"><span class="icon-chip">📖</span><strong>Ayetler</strong><small>Konulara göre seçmeler</small></button>
         <button class="quick-card" onclick="switchView('dua')"><span class="icon-chip">🤲</span><strong>Dualar</strong><small>Günlük ve Kur'an duaları</small></button>
         <button class="quick-card" onclick="switchView('favori')"><span class="icon-chip">♡</span><strong>Favorilerim</strong><small>Kendi seçtiklerin</small></button>
-        <button class="quick-card" style="grid-column:1 / -1" onclick="openNamaz()"><span class="icon-chip">🕌</span><strong>Namaz Vakitleri &amp; Kıble</strong><small id="namazCardSub">İline göre vakitler ve kıble pusulası</small></button>
+        <button class="quick-card" style="grid-column:1 / -1" onclick="switchView('tesbih')"><span class="icon-chip">📿</span><strong>Tesbihat &amp; Günlük Zikirler</strong><small>Sayaçlı günlük virdler</small></button>
       </div>
 
-      <div class="section-head"><h3>Tesbihat &amp; Günlük Zikirler</h3><span id="tesbihCount"></span></div>
-      <div id="tesbihList" class="list"></div>
     </section>
 
     <section id="esma" class="view">
@@ -384,6 +401,11 @@ body[data-theme="dark"] .icon-chip{
     <section id="dua" class="view">
       <div class="section-head"><h3>Dualar</h3><span>Günlük</span></div>
       <div id="duaList" class="list"></div>
+    </section>
+
+    <section id="tesbih" class="view">
+      <div class="section-head"><h3>Tesbihat &amp; Günlük Zikirler</h3><span id="tesbihCount"></span></div>
+      <div id="tesbihList" class="list"></div>
     </section>
 
     <section id="favori" class="view">
@@ -438,6 +460,7 @@ body[data-theme="dark"] .icon-chip{
   <button class="nav-btn" data-view="esma"><span class="icon-chip">◌</span>Esmalar</button>
   <button class="nav-btn" data-view="ayet"><span class="icon-chip">◫</span>Ayetler</button>
   <button class="nav-btn" data-view="dua"><span class="icon-chip">♧</span>Dualar</button>
+  <button class="nav-btn" data-view="tesbih"><span class="icon-chip">✦</span>Tesbihat</button>
   <button class="nav-btn" data-view="favori"><span class="icon-chip">♡</span>Favoriler</button>
 </nav>
 
@@ -2795,7 +2818,7 @@ function fireEzanAlert(label){
   showToast(msg);
   if(navigator.vibrate) navigator.vibrate([300, 150, 300]);
   if('Notification' in window && Notification.permission === 'granted'){
-    try{ new Notification('Vird-i Yâr', {body: msg, tag: 'ezan'}); }catch(e){}
+    try{ new Notification('Vird Diyarı', {body: msg, tag: 'ezan'}); }catch(e){}
   }
   playEzanSnippet();
 }
