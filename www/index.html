@@ -74,20 +74,27 @@ body[data-theme="dark"] .brand small{
 .brand h1{
   margin:3px 0 0;
   font-family:Georgia, "Times New Roman", serif;
-  font-size:40px;
+  font-size:46px;
   font-weight:700;
-  color:var(--ink);
   letter-spacing:.01em;
-  text-shadow:
-    0 1px 0 rgba(255,255,255,.85),
-    0 2px 2px rgba(73,56,35,.30),
-    0 4px 10px rgba(73,56,35,.18);
+  background:linear-gradient(105deg,
+    #7a5c33 0%, #a9853f 18%, #e3c06b 38%,
+    #fdf3cf 50%,
+    #e3c06b 62%, #a9853f 82%, #7a5c33 100%);
+  background-size:220% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.75)) drop-shadow(0 3px 3px rgba(73,56,35,.35));
+  animation:brandShine 7s ease-in-out infinite;
 }
 body[data-theme="dark"] .brand h1{
-  text-shadow:
-    0 1px 0 rgba(255,235,200,.22),
-    0 2px 3px rgba(0,0,0,.6),
-    0 5px 12px rgba(0,0,0,.45);
+  filter:drop-shadow(0 1px 0 rgba(255,235,200,.18)) drop-shadow(0 3px 4px rgba(0,0,0,.6));
+}
+@keyframes brandShine{
+  0%, 100%{ background-position:0% center }
+  50%{ background-position:100% center }
 }
 .icon-btn{
   width:44px;height:44px;border-radius:50%;
@@ -177,6 +184,7 @@ body[data-theme="dark"] .icon-chip{
 .item{
   border:1px solid var(--line);background:var(--card);border-radius:20px;
   padding:16px;box-shadow:0 6px 16px rgba(73,56,35,.04);
+  content-visibility:auto;contain-intrinsic-size:auto 150px;
 }
 .item-top{display:flex;justify-content:space-between;gap:12px}
 .item h4{margin:0 0 5px;font-size:17px}
@@ -201,7 +209,7 @@ body[data-theme="dark"] .icon-chip{
   -webkit-transform:translate3d(-50%,0,0);
   will-change:transform;
   width:min(100%,520px);background:var(--card);
-  backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  border-top:1px solid var(--line);
   display:grid;grid-template-columns:repeat(6,1fr);
   padding:9px 8px calc(9px + env(safe-area-inset-bottom));
   z-index:20;
