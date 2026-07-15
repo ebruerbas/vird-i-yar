@@ -2208,7 +2208,37 @@ function showToast(msg){
 }
 
 function vibrate(pattern){
+  // iOS navigator.vibrate desteklemez; native'de Capacitor Haptics kullan
+  const cap = window.Capacitor;
+  const H = (cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins) ? cap.Plugins.Haptics : null;
+  if(H){
+    try{
+      if(Array.isArray(pattern)){
+        const total = pattern.reduce((a,b)=>a+b,0);
+        if(total >= 200){
+          // Vird/tur tamamlandı: belirgin, seri titreşim
+          H.notification({ type:'SUCCESS' });
+          setTimeout(()=>{ H.impact({ style:'HEAVY' }); }, 200);
+          setTimeout(()=>{ H.vibrate({ duration:300 }); }, 420);
+        } else {
+          // Kademe tamamlandı: çift orta vuruş
+          H.impact({ style:'MEDIUM' });
+          setTimeout(()=>{ H.impact({ style:'MEDIUM' }); }, 130);
+        }
+      } else {
+        // Her zikirde hafif tık (fiziksel tesbih hissi)
+        H.impact({ style:'LIGHT' });
+      }
+    }catch(e){}
+    return;
+  }
   if(navigator.vibrate) navigator.vibrate(pattern);
+}
+
+// Sayaç alanının tamamına dokunarak sayma (ekrana bakmadan kullanım)
+function counterTap(e){
+  if(e.target.closest('button')) return; // düğmeler kendi işini yapsın
+  incrementCounter();
 }
 
 function saveCounter(){
@@ -2363,7 +2393,7 @@ function renderCounter(item){
       </div>`;
     $('sheetContent').innerHTML = `
       <h2>${item.title}</h2>
-      <div class="counter">
+      <div class="counter" ${done ? '' : 'onclick="counterTap(event)"'}>
         <div class="stage-info">${dots}</div>
         ${done
           ? `<p class="stage-label">Tesbihat tamamlandı 🌙</p>`
@@ -2398,7 +2428,7 @@ function renderCounter(item){
     $('sheetContent').innerHTML = `
       <h2>${item.title}</h2>
       <p style="color:var(--muted)">Hedef: ${target}</p>
-      <div class="counter">
+      <div class="counter" onclick="counterTap(event)">
         ${hasArabic ? `
         <div class="lang-toggle">
           <button class="lang-btn ${counterLang==='tr'?'active':''}" onclick="setCounterLang('tr')">Türkçe</button>
@@ -2415,6 +2445,7 @@ function renderCounter(item){
           <button onclick="resetCounter()">Sıfırla</button>
           <button onclick="decrementCounter()">−1</button>
         </div>
+        <p class="disclaimer" style="text-align:center">İpucu: Sayaç alanında herhangi bir yere dokunmak da sayar — ekrana bakmadan zikredebilirsin.</p>
       </div>
     `;
   }
