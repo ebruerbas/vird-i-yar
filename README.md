@@ -9,7 +9,7 @@ Esmaül Hüsna (99 isim), Kur'an'dan seçme ayetler ve dualar, zikir sayacı, na
 - **Dualar ve tesbihat** — günlük dualar, kademeli zikir sayacı
 - **Namaz vakitleri** — 81 il için, sıradaki vakte geri sayım
 - **Kıble pusulası** — cihaz sensörüyle
-- **Ezan bildirimi** — web'de sekme açıkken; iOS/Android uygulamasında arka planda (aşağıya bakın)
+- **Ezan bildirimi** — web'de sekme açıkken; iOS/Android uygulamasında arka planda; ezan sesi isteğe bağlı kapatılabilir, kapatılınca yalnızca cihazın varsayılan bildirim sesiyle uyarır (aşağıya bakın)
 
 ## Web olarak çalıştırma
 
@@ -39,6 +39,7 @@ npx cap open ios   # Xcode'da çalıştırın
 - Bildirim sesi iOS kuralı gereği en fazla 30 saniyedir; ezanın ilk ~28 saniyesi çalınır (Nasır el-Katami, CC BY-NC 3.0).
 - Push sunucusu **gerekmez**; her şey cihazda çalışır.
 - Kullanıcı uygulamayı 12 günden uzun süre hiç açmazsa bildirimler tükenir; uygulamanın arada bir açılması pencereyi ileri kaydırır.
+- "Ezan Sesi" ayarı kapatılırsa bildirim yine gelir ama ezan çalmaz, cihazın varsayılan bildirim sesi kullanılır (Android'de bunun için ayrı bir bildirim kanalı `ezan-sessiz` kullanılır; kanal sesi Android'de sonradan değiştirilemediği için).
 
 İlgili kod: `www/js/ezan-native.js` (web'de kendiliğinden devre dışıdır).
 

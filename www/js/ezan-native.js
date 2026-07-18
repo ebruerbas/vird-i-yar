@@ -30,6 +30,8 @@
   var SOUND_ANDROID = 'ezan_kisa';
 
   function enabled(){ return localStorage.getItem('virdiyarEzanAlert') === '1'; }
+  // Varsayılan açık: '0' kaydedilmemişse ezan sesi çalınır (eski davranışla uyumlu).
+  function soundEnabled(){ return localStorage.getItem('virdiyarEzanSound') !== '0'; }
   function selectedIl(){
     var name = localStorage.getItem('virdiyarIl');
     if(typeof IL_LIST === 'undefined' || !name) return null;
@@ -53,15 +55,27 @@
 
   function ensureAndroidChannel(){
     if(cap.getPlatform() !== 'android') return Promise.resolve();
-    return LN.createChannel({
-      id:'ezan',
-      name:'Ezan Bildirimleri',
-      description:'Vakit girince ezan sesiyle bildirim',
-      importance:5,
-      sound: SOUND_ANDROID + '.wav',
-      visibility:1,
-      vibration:true
-    }).catch(function(){});
+    // Android'de kanalın sesi oluşturulduktan sonra değiştirilemiyor, bu yüzden
+    // ezan sesli / sessiz (varsayılan bildirim sesi) için iki ayrı kanal var.
+    return Promise.all([
+      LN.createChannel({
+        id:'ezan',
+        name:'Ezan Bildirimleri (ezan sesiyle)',
+        description:'Vakit girince ezan sesiyle bildirim',
+        importance:5,
+        sound: SOUND_ANDROID + '.wav',
+        visibility:1,
+        vibration:true
+      }).catch(function(){}),
+      LN.createChannel({
+        id:'ezan-sessiz',
+        name:'Ezan Bildirimleri (sessiz)',
+        description:'Vakit girince ezan sesi olmadan, varsayılan bildirim sesiyle',
+        importance:5,
+        visibility:1,
+        vibration:true
+      }).catch(function(){})
+    ]);
   }
 
   var scheduling = false;
@@ -84,6 +98,7 @@
           var params = adhan.CalculationMethod.Turkey();
           var coords = new adhan.Coordinates(il.lat, il.lon);
           var now = new Date();
+          var withSound = soundEnabled();
           var notifications = [];
           var id = 1;
           for(var d = 0; d < DAYS_AHEAD && notifications.length < MAX_NOTIFS; d++){
@@ -93,15 +108,21 @@
               var v = VAKITLER[i];
               var at = times[v.key];
               if(at <= now) continue;
-              notifications.push({
+              var notif = {
                 id: id++,
                 title: 'Vird Diyarı',
                 body: v.label + ' vakti girdi 🕌 (' + il.name + ')',
                 schedule: { at: at, allowWhileIdle: true },
-                sound: cap.getPlatform() === 'ios' ? SOUND_IOS : SOUND_ANDROID,
-                channelId: 'ezan',
                 extra: { vakit: v.label }
-              });
+              };
+              if(withSound){
+                notif.sound = cap.getPlatform() === 'ios' ? SOUND_IOS : SOUND_ANDROID;
+                notif.channelId = 'ezan';
+              } else {
+                // sound alanını atlamak varsayılan/sessiz bildirim sesini kullanır (ezan çalmaz)
+                notif.channelId = 'ezan-sessiz';
+              }
+              notifications.push(notif);
             }
           }
           if(!notifications.length) return;
@@ -128,6 +149,16 @@
     };
   }
 
+  // 1b) Ezan sesi aç/kapa düğmesini sarmala — sound kanal/alanı bildirim başına
+  // baked-in olduğu için tercih değişince mevcut zamanlamalar iptal edilip yeniden kurulmalı.
+  var origSoundToggle = window.toggleEzanSound;
+  if(typeof origSoundToggle === 'function'){
+    window.toggleEzanSound = function(){
+      origSoundToggle.apply(this, arguments);
+      scheduleEzan();
+    };
+  }
+
   // 2) İl değişince yeniden zamanla
   var sel = document.getElementById('ilSelect');
   if(sel) sel.addEventListener('change', function(){ setTimeout(scheduleEzan, 400); });
@@ -138,9 +169,12 @@
   }
 
   // 4) Ayar metnini native duruma uyarla
-  var settingSmall = document.querySelector('.ezan-setting small');
-  if(settingSmall){
-    settingSmall.textContent = 'Vakit girince ezan sesiyle bildirim gönderir. Uygulama kapalıyken de çalışır; vakitler cihazda hesaplanır.';
+  var settingRows = document.querySelectorAll('.ezan-setting small');
+  if(settingRows[0]){
+    settingRows[0].textContent = 'Vakit girince bildirim gönderir. Uygulama kapalıyken de çalışır; vakitler cihazda hesaplanır.';
+  }
+  if(settingRows[1]){
+    settingRows[1].textContent = 'Kapatırsanız vakit girince ezan sesi çalmaz, yalnızca cihazınızın varsayılan bildirim sesiyle uyarır.';
   }
 
   // 5) Açılışta zamanla

@@ -442,6 +442,13 @@ body[data-theme="dark"] .icon-chip{
         </div>
         <button type="button" id="ezanToggle" class="toggle" aria-label="Ezan bildirimi" onclick="toggleEzanAlert()"></button>
       </div>
+      <div class="ezan-setting" style="margin-top:-4px">
+        <div>
+          <strong>🔊 Ezan Sesi</strong>
+          <small>Kapatırsanız vakit girince yalnızca sessiz/normal bildirim gelir, ezan sesi çalmaz.</small>
+        </div>
+        <button type="button" id="ezanSoundToggle" class="toggle" aria-label="Ezan sesi" onclick="toggleEzanSound()"></button>
+      </div>
       <div class="counter">
         <div class="eyebrow" style="text-align:center">Kıble Yönü</div>
         <div class="qibla-compass">
@@ -2838,6 +2845,8 @@ let ezanAudio = null;
 let ezanFadeTimer = null;
 
 function ezanAlertEnabled(){ return localStorage.getItem('virdiyarEzanAlert') === '1'; }
+// Varsayılan açık: mevcut kullanıcılar için davranış değişmesin, yalnızca '0' kaydedilmişse kapalı sayılır.
+function ezanSoundEnabled(){ return localStorage.getItem('virdiyarEzanSound') !== '0'; }
 
 function getEzanAudio(){
   if(!ezanAudio){
@@ -2866,6 +2875,13 @@ function toggleEzanAlert(){
   }
 }
 
+function toggleEzanSound(){
+  const enable = !ezanSoundEnabled();
+  localStorage.setItem('virdiyarEzanSound', enable ? '1' : '0');
+  $('ezanSoundToggle').classList.toggle('on', enable);
+  showToast(enable ? 'Ezan sesi açık' : 'Ezan sesi kapalı — sadece bildirim gelecek');
+}
+
 function playEzanSnippet(){
   const a = getEzanAudio();
   try{
@@ -2890,7 +2906,7 @@ function fireEzanAlert(label){
   if('Notification' in window && Notification.permission === 'granted'){
     try{ new Notification('Vird Diyarı', {body: msg, tag: 'ezan'}); }catch(e){}
   }
-  playEzanSnippet();
+  if(ezanSoundEnabled()) playEzanSnippet();
 }
 
 initHero();
@@ -2905,6 +2921,8 @@ render();
   }
   const ezanBtn = $('ezanToggle');
   if(ezanBtn) ezanBtn.classList.toggle('on', ezanAlertEnabled());
+  const ezanSoundBtn = $('ezanSoundToggle');
+  if(ezanSoundBtn) ezanSoundBtn.classList.toggle('on', ezanSoundEnabled());
   setInterval(tickCountdown, 1000);
 })();
 </script>
