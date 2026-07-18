@@ -119,7 +119,10 @@
                 notif.sound = cap.getPlatform() === 'ios' ? SOUND_IOS : SOUND_ANDROID;
                 notif.channelId = 'ezan';
               } else {
-                // sound alanını atlamak varsayılan/sessiz bildirim sesini kullanır (ezan çalmaz)
+                // capacitor.config.json'daki plugins.LocalNotifications.sound (iOS için genel
+                // varsayılan) devreye girmesin diye sound'u burada açıkça null yapıyoruz —
+                // sadece alanı atlamak iOS'ta yine de ezan sesini çalabiliyor.
+                notif.sound = null;
                 notif.channelId = 'ezan-sessiz';
               }
               notifications.push(notif);
