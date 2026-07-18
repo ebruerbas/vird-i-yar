@@ -2189,6 +2189,28 @@ const IL_LIST = [
   {name:'Zonguldak', lat:41.4564, lon:31.7987}
 ];
 
+// ezanvakti.imsakiyem.com ilçe ID'leri — her il için Diyanet'in "il için namaz vakti"
+// sayfasıyla aynı, ilin kendi adını taşıyan ilçe kaydı (81/81 il için birebir eşleşme bulundu).
+const IL_DISTRICT_ID = {
+  'Adana': 9146, 'Adıyaman': 9158, 'Afyonkarahisar': 9167, 'Ağrı': 9185, 'Aksaray': 9193,
+  'Amasya': 9198, 'Ankara': 9206, 'Antalya': 9225, 'Ardahan': 9238, 'Artvin': 9246,
+  'Aydın': 9252, 'Balıkesir': 9270, 'Bartın': 9285, 'Batman': 9288, 'Bayburt': 9295,
+  'Bilecik': 9297, 'Bingöl': 9303, 'Bitlis': 9311, 'Bolu': 9315, 'Burdur': 9327,
+  'Bursa': 9335, 'Çanakkale': 9352, 'Çankırı': 9359, 'Çorum': 9370, 'Denizli': 9392,
+  'Diyarbakır': 9402, 'Düzce': 9414, 'Edirne': 9419, 'Elazığ': 9432, 'Erzincan': 9440,
+  'Erzurum': 9451, 'Eskişehir': 9470, 'Gaziantep': 9479, 'Giresun': 9494, 'Gümüşhane': 9501,
+  'Hakkari': 9507, 'Hatay': 20089, 'Iğdır': 9522, 'Isparta': 9528, 'İstanbul': 9541,
+  'İzmir': 9560, 'Kahramanmaraş': 9577, 'Karabük': 9581, 'Karaman': 9587, 'Kars': 9594,
+  'Kastamonu': 9609, 'Kayseri': 9620, 'Kilis': 9629, 'Kırıkkale': 9635, 'Kırklareli': 9638,
+  'Kırşehir': 9646, 'Kocaeli': 9654, 'Konya': 9676, 'Kütahya': 9689, 'Malatya': 9703,
+  'Manisa': 9716, 'Mardin': 9726, 'Mersin': 9737, 'Muğla': 9747, 'Muş': 9755,
+  'Nevşehir': 9760, 'Niğde': 9766, 'Ordu': 9782, 'Osmaniye': 9788, 'Rize': 9799,
+  'Sakarya': 9807, 'Samsun': 9819, 'Siirt': 9839, 'Sinop': 9847, 'Sivas': 9868,
+  'Şanlıurfa': 9831, 'Şırnak': 9854, 'Tekirdağ': 9879, 'Tokat': 9887, 'Trabzon': 9905,
+  'Tunceli': 9914, 'Uşak': 9919, 'Van': 9930, 'Yalova': 9935, 'Yozgat': 9949,
+  'Zonguldak': 9955
+};
+
 // --- DURUM ---
 let favorites = JSON.parse(localStorage.getItem('virdiyarFavorites') || '[]');
 let currentId = null;
@@ -2676,10 +2698,19 @@ async function loadNamazVakti(il){
   }
   $('namazTimesBox').innerHTML = '<div class="empty">Vakitler yükleniyor…</div>';
   try{
-    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${il.lat}&longitude=${il.lon}&method=13`);
+    const districtId = IL_DISTRICT_ID[il.name];
+    const res = await fetch(`https://ezanvakti.imsakiyem.com/api/prayer-times/${districtId}/daily?startDate=${todayKey}&endDate=${todayKey}`);
     if(!res.ok) throw new Error('network');
     const json = await res.json();
-    const timings = json.data.timings;
+    const rec = json.data && json.data[0];
+    if(!rec || !rec.times) throw new Error('no data');
+    const t = rec.times;
+    // Diyanet'in gerçek yayınladığı vakitler (imsak/güneş/öğle/ikindi/akşam/yatsı) —
+    // mevcut render/geri sayım kodunun beklediği Fajr/Sunrise/Dhuhr/Asr/Maghrib/Isha şekline eşleniyor.
+    const timings = {
+      Fajr: t.imsak, Sunrise: t.gunes, Dhuhr: t.ogle,
+      Asr: t.ikindi, Maghrib: t.aksam, Isha: t.yatsi
+    };
     const fetchedAt = Date.now();
     localStorage.setItem(cacheKey, JSON.stringify({date: todayKey, timings, fetchedAt}));
     renderNamazVakti(timings, fetchedAt, true, false, todayKey);

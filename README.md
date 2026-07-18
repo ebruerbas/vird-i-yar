@@ -58,4 +58,4 @@ Aynı kod Android'de de çalışır (`npx cap add android`). Bildirim sesi için
 
 - Ayet mealleri: "Kur'ân-ı Kerîm'den Duâlar" derlemesi ve Diyanet meali esas alınmıştır.
 - Ezan sesi: Nasır el-Katami — [archive.org/details/1azan](https://archive.org/details/1azan) (CC BY-NC 3.0).
-- Namaz vakitleri (web): [AlAdhan API](https://aladhan.com/prayer-times-api), Diyanet yöntemi (method=13).
+- Namaz vakitleri (web): [ezanvakti.imsakiyem.com](https://ezanvakti.imsakiyem.com) — T.C. Diyanet İşleri Başkanlığı'nın il bazında resmî yayınladığı vakitleri birebir yansıtır (ücretsiz, GPL-3.0, topluluk tarafından bakımı yapılır, resmî SLA yoktur). Sadece HTTP üzerinden tüketildiği için GPL-3.0 bu uygulamanın kendi koduna copyleft yükümlülüğü getirmez.
