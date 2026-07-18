@@ -2695,7 +2695,7 @@ async function loadNamazVakti(il){
 
 function renderNamazVakti(t, fetchedAt, fresh, stale, dateKey){
   const rows = [
-    ['İmsak', t.Imsak], ['Güneş', t.Sunrise], ['Öğle', t.Dhuhr],
+    ['İmsak', t.Fajr], ['Güneş', t.Sunrise], ['Öğle', t.Dhuhr],
     ['İkindi', t.Asr], ['Akşam', t.Maghrib], ['Yatsı', t.Isha]
   ];
   $('namazTimesBox').innerHTML = rows.map(([label, time]) =>
@@ -2711,7 +2711,7 @@ function renderNamazVakti(t, fetchedAt, fresh, stale, dateKey){
 
 // --- VAKİT GERİ SAYIMI ---
 const VAKIT_ORDER = [
-  ['İmsak','Imsak',"İmsak'a"],
+  ['İmsak','Fajr',"İmsak'a"],
   ['Güneş','Sunrise',"Güneş'e"],
   ['Öğle','Dhuhr',"Öğle'ye"],
   ['İkindi','Asr',"İkindi'ye"],
@@ -2739,7 +2739,7 @@ function getNextVakit(){
     if(t > now) return {label, dative, time: t, tomorrow: false};
   }
   // Bugünün tüm vakitleri geçti → yarınki imsak (bugünkü imsak saatiyle yaklaşık)
-  const t = parseVakit(timingsDateKey, todayTimings.Imsak);
+  const t = parseVakit(timingsDateKey, todayTimings.Fajr);
   t.setDate(t.getDate() + 1);
   return {label:'İmsak', dative:"İmsak'a", time: t, tomorrow: true};
 }
