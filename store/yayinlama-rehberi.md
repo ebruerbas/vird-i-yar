@@ -72,4 +72,19 @@ App Store Connect → TestFlight → kendi cihazına yükleyip birkaç gün kull
 
 - **Ezan sesi lisansı**: Mevcut ses CC BY-NC 3.0 (ticari olmayan). Uygulama ücretsiz ve atıf uygulama içinde mevcut; yine de App Store dağıtımında en garantili yol, ileride kendi kaydın veya tamamen serbest lisanslı bir ezan kaydıyla değiştirmek. Reddedilme olursa ilk bakılacak yer burası değil ama telif tarafında en zayıf halka bu.
 - **Reddedilme durumunda**: Apple gerekçeyi yazılı bildirir; çoğu zaman küçük bir düzeltmeyle yeniden gönderilir. Gerekçeyi bana ilet, birlikte düzeltelim.
-- **Güncelleme yayınlamak**: Version/Build numarasını artır → Archive → Upload → yeni sürümü incelemeye gönder.
+
+## Güncelleme Yayınlamak (uygulama zaten yayında olduğunda)
+
+Uygulama bir kez onaylanıp yayınlandıktan sonra, her yeni sürüm için 1-3. adımlar (Developer Program, ilk imzalama, ilk App Store Connect kaydı) tekrar gerekmez — sadece şunlar:
+
+1. **Xcode'da versiyon/build artır**: App hedefi → General → **Version** (örn. `1.0.0` → `1.1.0`, kullanıcıya görünür) ve **Build** (her yüklemede benzersiz olmalı, örn. `1` → `2`).
+2. **`npx cap sync ios`** — `www/` içindeki HTML/JS değişikliklerini native projeye aktarır. Native tarafı etkileyen bir değişiklik varsa (örn. `capacitor.config.json`, yeni plugin, `ezan-native.js`) mutlaka çalıştır.
+3. **Gerçek cihazda test et** — özellikle bildirim/ses gibi native davranışları simülatör güvenilir göstermeyebilir.
+4. **Product → Archive → Distribute App → App Store Connect → Upload** (ilk yüklemeyle aynı).
+5. App Store Connect'te **yeni bir sürüm oluştur** (My Apps → uygulaman → sol üstte **+ Version**), yüklenen build'i seç.
+6. **"What's New in This Version" (Yenilikler) metnini yaz** — Türkçe, kısa maddeler halinde bu sürümde değişenler.
+7. **Yaş derecelendirme anketi**: Apple 2025'te derecelendirme sistemini yeniledi (4+/9+ yanına 13+/16+/18+ eklendi, 12+/17+ kaldırıldı) ve güncellenmiş anketin **31 Ocak 2026**'ya kadar doldurulmasını zorunlu kıldı — bu tarih geçtiği için muhtemelen bu güncellemede App Store Connect seni yeni soru setini (uygulama içi kontroller, hassas içerik, tıbbi/sağlık içeriği, şiddet temaları vb.) doldurmaya zorlayacak. Vird Diyarı için hepsi "hayır/yok" olacak, sonuç yine 4+ çıkar; sadece anketin kendisini geçmen gerekiyor.
+8. Ekran görüntüleri/açıklama değişmediyse tekrar yüklemene gerek yok, olduğu gibi kalır.
+9. **Submit for Review** — inceleme genelde 1-3 gün (çoğu zaman 24-48 saat).
+
+İpucu: Build en az **Xcode 16** ve güncel bir SDK ile alınmış olmalı; çok eski bir Xcode kullanıyorsan yükleme reddedilebilir, önce Xcode'u güncelle.
