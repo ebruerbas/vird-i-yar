@@ -46,7 +46,7 @@ NAMAZ VAKİTLERİ VE KIBLE
 81 il için günlük namaz vakitleri, sıradaki vakte canlı geri sayım ve cihaz sensörüyle çalışan kıble pusulası.
 
 EZAN BİLDİRİMİ
-Vakit girdiğinde ezan sesiyle bildirim alın. Vakitler cihazınızda hesaplanır; bildirimler internet bağlantısı olmadan da çalışır.
+Vakit girdiğinde bildirim alın; isterseniz ezan sesiyle, isterseniz sadece cihazınızın normal bildirim sesiyle. Vakitler cihazınızda hesaplanır; bildirimler internet bağlantısı olmadan da çalışır.
 
 ÖZELLİKLER
 • Favorilere ekleme ve hızlı arama (aksansız yazım desteğiyle)
@@ -54,13 +54,25 @@ Vakit girdiğinde ezan sesiyle bildirim alın. Vakitler cihazınızda hesaplanı
 • Tamamen çevrimdışı içerik — üyelik yok, reklam yok
 • Hiçbir kişisel veri toplanmaz
 
-Not: Namaz vakitleri Diyanet hesap yöntemine yakın şekilde hesaplanır; resmî vakitlerle birkaç dakika fark olabilir. Dinî içerikler klasik kaynaklardan derlenmiş olup ilgili kaynaklar uygulama içinde belirtilmiştir.
+Not: Uygulama içinde görüntülenen namaz vakitleri, Diyanet İşleri Başkanlığı'nın resmî yayınladığı il bazlı verilerdir. Uygulama kapalıyken gelen bildirimler cihazda çevrimdışı hesaplanır ve resmî vakitlerle birkaç dakika fark olabilir. Dinî içerikler klasik kaynaklardan derlenmiş olup ilgili kaynaklar uygulama içinde belirtilmiştir.
 ```
 
 ## Sürüm Notları (What's New — ilk sürüm)
 
 ```
 Vird Diyarı ile tanışın: 99 Esma, Kur'an'dan 97 ayet ve dua, sayaçlı tesbihat, namaz vakitleri, kıble pusulası ve ezan bildirimi.
+```
+
+## Sürüm Notları (What's New — sonraki güncelleme)
+
+```
+• Namaz vakitleri artık Diyanet İşleri Başkanlığı'nın resmî yayınladığı verilerle bire bir — İmsak ve Öğle vakitlerindeki küçük sapmalar giderildi.
+• Yeni: Ezan Sesi ayarı. Vakit bildirimlerini açık tutup ezan sesini isteğe bağlı kapatabilirsiniz; kapatınca bildirim yine gelir, sadece cihazınızın normal bildirim sesiyle.
+```
+
+*(Kısa/sade tercih edilirse tek satır:)*
+```
+Namaz vakitleri artık Diyanet'in resmî verileriyle bire bir. Yeni: bildirimlerde ezan sesini isteğe bağlı kapatabilme seçeneği eklendi.
 ```
 
 ## Kategori
@@ -81,7 +93,7 @@ Vird Diyarı ile tanışın: 99 Esma, Kur'an'dan 97 ayet ve dua, sayaçlı tesbi
 **"Veri Toplanmıyor" (Data Not Collected)** seçin. Uygulama:
 - Hesap/üyelik istemez, analitik içermez, reklam içermez
 - İl seçimi ve favoriler yalnızca cihazda saklanır
-- Namaz vakti için yalnızca seçilen ilin koordinatı kullanılır (web sürümünde AlAdhan API'ye il koordinatı gider; iOS'ta hesap cihazdadır)
+- Namaz vakti için yalnızca seçilen il gönderilir (uygulama içi görüntüleme için Diyanet verilerini yansıtan ezanvakti.imsakiyem.com'a il adı gider; iOS'ta arka plan bildirim hesaplaması cihazdadır, sunucuya veri gitmez)
 
 ## URL'ler
 
